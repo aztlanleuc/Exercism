@@ -21,7 +21,7 @@ class WordSearch {
           column = Number(column);
           if (this.grid[row][column] === word[0]) {
             // console.log("we found the first letter");
-            let isFound = this.searchRecursively(word, 1, row, column);
+            let isFound = this.searchRecursively(word, 1, row, column, "all");
             // console.log("isFound:", isFound); // DEBUG
             // console.log("row, typeof row:", row, typeof row); // DEBUG
             // console.log("column, typeof column:", column, typeof column); // DEBUG
@@ -74,6 +74,7 @@ class WordSearch {
   }
 
   calcDirection(ogrow, ogcolumn, newrow, newcolumn) {
+    console.log("time to calculate the direction");
     let direction = "";
     if (ogcolumn > newcolumn) {
       direction += "top-";
@@ -91,265 +92,50 @@ class WordSearch {
       direction += "right";
     }
 
+    console.log("direction:", direction); // DEBUG
     return direction;
   }
 
   searchRecursively(string, index, rownum, columnnum, dir) {
     console.log("function called:", rownum, columnnum); // DEBUG
 
-    if (dir === "any") {
-      for (let i = rownum - 1; i <= rownum + 1; i++) {
-        for (let j = columnnum - 1; j <= columnnum + 1; j++) {
-          console.log("i, j:", i, j); // DEBUG
-          try {
-            if (!(i === rownum && j === columnnum)) {
-              //if we've reached the end of the string, return that we found it
-              if (index >= string.length) {
-                return true;
-              }
-              // if we've hit the edge of the grid, return that we haven't found the string
-              if (
-                this.grid[rownum] === undefined ||
-                this.grid[rownum][columnnum] === undefined
-              ) {
-                continue;
-              }
-              // if neither of those cases occur, and the letter we're looking at is the next one in the string
-              // look to see if we can find the next one too
-              if (this.grid[i][j] === string[index]) {
-                // work out direction somehow
-                currentDir = this.calcDirection(rownum, columnnum, i, j);
-                return this.searchRecursively(
-                  string,
-                  index + 1,
-                  i,
-                  j,
-                  currentDir
-                );
-              }
+    console.log("dir:", dir); // DEBUG
+
+    for (let i = rownum - 1; i <= rownum + 1; i++) {
+      for (let j = columnnum - 1; j <= columnnum + 1; j++) {
+        console.log("i, j:", i, j); // DEBUG
+        try {
+          if (!(i === rownum && j === columnnum)) {
+            //if we've reached the end of the string, return that we found it
+            if (index >= string.length) {
+              return true;
             }
-          } catch (err) {
-            console.log("err:", err);
+            // if we've hit the edge of the grid, return that we haven't found the string
+            if (
+              this.grid[rownum] === undefined ||
+              this.grid[rownum][columnnum] === undefined
+            ) {
+              continue;
+            }
+            // if neither of those cases occur, and the letter we're looking at is the next one in the string
+            // look to see if we can find the next one too
+            if (this.grid[i][j] === string[index]) {
+              // console.log("matched next letter");
+              // work out direction somehow
+              let currentDir = this.calcDirection(rownum, columnnum, i, j);
+              // console.log("currentDir:", currentDir); // DEBUG
+              return this.searchRecursively(
+                string,
+                index + 1,
+                i,
+                j,
+                currentDir
+              );
+            }
           }
+        } catch (err) {
+          // console.log("err:", err);
         }
-      }
-    } else if (dir === "top-left") {
-      let i = rownum - 1;
-      let j = columnnum - 1;
-      try {
-        if (!(i === rownum && j === columnnum)) {
-          //if we've reached the end of the string, return that we found it
-          if (index >= string.length) {
-            return true;
-          }
-          // if we've hit the edge of the grid, return that we haven't found the string
-          if (
-            this.grid[rownum] === undefined ||
-            this.grid[rownum][columnnum] === undefined
-          ) {
-            return false;
-          }
-          // if neither of those cases occur, and the letter we're looking at is the next one in the string
-          // look to see if we can find the next one too
-          if (this.grid[i][j] === string[index]) {
-            // work out direction somehow
-            currentDir = this.calcDirection(rownum, columnnum, i, j);
-            return this.searchRecursively(string, index + 1, i, j, currentDir);
-          }
-        }
-      } catch (err) {
-        console.log("err:", err);
-      }
-    } else if (dir === "top-middle") {
-      let i = rownum - 1;
-      let j = columnnum;
-      try {
-        if (!(i === rownum && j === columnnum)) {
-          //if we've reached the end of the string, return that we found it
-          if (index >= string.length) {
-            return true;
-          }
-          // if we've hit the edge of the grid, return that we haven't found the string
-          if (
-            this.grid[rownum] === undefined ||
-            this.grid[rownum][columnnum] === undefined
-          ) {
-            return false;
-          }
-          // if neither of those cases occur, and the letter we're looking at is the next one in the string
-          // look to see if we can find the next one too
-          if (this.grid[i][j] === string[index]) {
-            // work out direction somehow
-            currentDir = this.calcDirection(rownum, columnnum, i, j);
-            return this.searchRecursively(string, index + 1, i, j, currentDir);
-          }
-        }
-      } catch (err) {
-        console.log("err:", err);
-      }
-    } else if (dir === "top-right") {
-      let i = rownum - 1;
-      let j = columnnum + 1;
-      try {
-        if (!(i === rownum && j === columnnum)) {
-          //if we've reached the end of the string, return that we found it
-          if (index >= string.length) {
-            return true;
-          }
-          // if we've hit the edge of the grid, return that we haven't found the string
-          if (
-            this.grid[rownum] === undefined ||
-            this.grid[rownum][columnnum] === undefined
-          ) {
-            return false;
-          }
-          // if neither of those cases occur, and the letter we're looking at is the next one in the string
-          // look to see if we can find the next one too
-          if (this.grid[i][j] === string[index]) {
-            // work out direction somehow
-            currentDir = this.calcDirection(rownum, columnnum, i, j);
-            return this.searchRecursively(string, index + 1, i, j, currentDir);
-          }
-        }
-      } catch (err) {
-        console.log("err:", err);
-      }
-    } else if (dir === "middle-left") {
-      let i = rownum;
-      let j = columnnum - 1;
-      try {
-        if (!(i === rownum && j === columnnum)) {
-          //if we've reached the end of the string, return that we found it
-          if (index >= string.length) {
-            return true;
-          }
-          // if we've hit the edge of the grid, return that we haven't found the string
-          if (
-            this.grid[rownum] === undefined ||
-            this.grid[rownum][columnnum] === undefined
-          ) {
-            return false;
-          }
-          // if neither of those cases occur, and the letter we're looking at is the next one in the string
-          // look to see if we can find the next one too
-          if (this.grid[i][j] === string[index]) {
-            // work out direction somehow
-            currentDir = this.calcDirection(rownum, columnnum, i, j);
-            return this.searchRecursively(string, index + 1, i, j, currentDir);
-          }
-        }
-      } catch (err) {
-        console.log("err:", err);
-      }
-    } else if (dir === "middle-middle") {
-      // don't do anything in this case
-    } else if (dir === "middle-right") {
-      let i = rownum;
-      let j = columnnum + 1;
-      try {
-        if (!(i === rownum && j === columnnum)) {
-          //if we've reached the end of the string, return that we found it
-          if (index >= string.length) {
-            return true;
-          }
-          // if we've hit the edge of the grid, return that we haven't found the string
-          if (
-            this.grid[rownum] === undefined ||
-            this.grid[rownum][columnnum] === undefined
-          ) {
-            return false;
-          }
-          // if neither of those cases occur, and the letter we're looking at is the next one in the string
-          // look to see if we can find the next one too
-          if (this.grid[i][j] === string[index]) {
-            // work out direction somehow
-            currentDir = this.calcDirection(rownum, columnnum, i, j);
-            return this.searchRecursively(string, index + 1, i, j, currentDir);
-          }
-        }
-      } catch (err) {
-        console.log("err:", err);
-      }
-    } else if (dir === "bottom-left") {
-      let i = rownum + 1;
-      let j = columnnum - 1;
-      try {
-        if (!(i === rownum && j === columnnum)) {
-          //if we've reached the end of the string, return that we found it
-          if (index >= string.length) {
-            return true;
-          }
-          // if we've hit the edge of the grid, return that we haven't found the string
-          if (
-            this.grid[rownum] === undefined ||
-            this.grid[rownum][columnnum] === undefined
-          ) {
-            return false;
-          }
-          // if neither of those cases occur, and the letter we're looking at is the next one in the string
-          // look to see if we can find the next one too
-          if (this.grid[i][j] === string[index]) {
-            // work out direction somehow
-            currentDir = this.calcDirection(rownum, columnnum, i, j);
-            return this.searchRecursively(string, index + 1, i, j, currentDir);
-          }
-        }
-      } catch (err) {
-        console.log("err:", err);
-      }
-    } else if (dir === "bottom-middle") {
-      let i = rownum + 1;
-      let j = columnnum;
-      try {
-        if (!(i === rownum && j === columnnum)) {
-          //if we've reached the end of the string, return that we found it
-          if (index >= string.length) {
-            return true;
-          }
-          // if we've hit the edge of the grid, return that we haven't found the string
-          if (
-            this.grid[rownum] === undefined ||
-            this.grid[rownum][columnnum] === undefined
-          ) {
-            return false;
-          }
-          // if neither of those cases occur, and the letter we're looking at is the next one in the string
-          // look to see if we can find the next one too
-          if (this.grid[i][j] === string[index]) {
-            // work out direction somehow
-            currentDir = this.calcDirection(rownum, columnnum, i, j);
-            return this.searchRecursively(string, index + 1, i, j, currentDir);
-          }
-        }
-      } catch (err) {
-        console.log("err:", err);
-      }
-    } else if (dir === "bottom-right") {
-      let i = rownum + 1;
-      let j = columnnum + 1;
-      try {
-        if (!(i === rownum && j === columnnum)) {
-          //if we've reached the end of the string, return that we found it
-          if (index >= string.length) {
-            return true;
-          }
-          // if we've hit the edge of the grid, return that we haven't found the string
-          if (
-            this.grid[rownum] === undefined ||
-            this.grid[rownum][columnnum] === undefined
-          ) {
-            return false;
-          }
-          // if neither of those cases occur, and the letter we're looking at is the next one in the string
-          // look to see if we can find the next one too
-          if (this.grid[i][j] === string[index]) {
-            // work out direction somehow
-            currentDir = this.calcDirection(rownum, columnnum, i, j);
-            return this.searchRecursively(string, index + 1, i, j, currentDir);
-          }
-        }
-      } catch (err) {
-        console.log("err:", err);
       }
     }
   }
