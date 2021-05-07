@@ -1,8 +1,3 @@
-/*
-refactoring things: 
-[] not having a double nested for loop
-*/
-
 const top = -1;
 const bottom = 1;
 const middle = 0;
@@ -19,7 +14,7 @@ class WordSearch {
     // recursive version
 
     for (let word of wordArray) {
-      for (let row in this.grid) {
+      row_block: for (let row in this.grid) {
         row = Number(row);
         for (let column in this.grid[row]) {
           column = Number(column);
@@ -31,6 +26,7 @@ class WordSearch {
                 start: [row + 1, column + 1],
                 end: [endLocation[0] + 1, endLocation[1] + 1],
               };
+              break row_block;
             }
           }
         }
@@ -86,6 +82,7 @@ class WordSearch {
             columnnum + j,
             [i, j]
           );
+
           if (!result) {
             continue;
           }
