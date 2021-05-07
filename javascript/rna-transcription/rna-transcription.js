@@ -4,7 +4,23 @@
 //
 
 export const toRna = (inputSequence) => {
-  for (const index in inputSequence) {
-    console.log(index);
+  let output = "";
+  for (const letter of inputSequence) {
+    switch (letter) {
+      case "C":
+        output += "G";
+        break;
+      case "G":
+        output += "C";
+        break;
+      case "A":
+        output += "U";
+        break;
+      case "T":
+        output += "A";
+        break;
+    }
   }
+
+  return output;
 };
