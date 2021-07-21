@@ -33,24 +33,12 @@ module Luhn
   def self.valid?(input)
     stripped_input = input.gsub(/\s+/, "")
 
-    if stripped_input.length == 1
-        return false
-    end
+    return false if stripped_input.length == 1 # return false if the input is only one character long
 
-    if stripped_input =~ /\D+/
-        return false
-    end
+    return false if stripped_input =~ /\D+/ # return false if the input contains any non-number characters
 
-    valid_checksum = calculate_checksum(stripped_input[0, stripped_input.length - 1])
+    valid_checksum = calculate_checksum(stripped_input[0, stripped_input.length - 1]) # calculate what the valid checksum would be
 
-    if valid_checksum == stripped_input
-      return true
-    else
-      return false
-    end
+    return valid_checksum == stripped_input ? true : false # return whether or not the checksum provided matches the valid one
   end
 end
-
-puts Luhn.calculate_checksum '0'
-
-puts Luhn.valid? '0'
