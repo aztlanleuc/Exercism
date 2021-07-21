@@ -1,11 +1,3 @@
-=begin
-Write your code for the 'Luhn' exercise in this file. Make the tests in
-`luhn_test.rb` pass.
-
-To get started with TDD, see the `README.md` file in your
-`ruby/luhn` directory.
-=end
-
 module Luhn
   def self.calculate_checksum(input)
     digit_array = input.split('')
@@ -18,10 +10,12 @@ module Luhn
 
       if index.even?
         doubled = num * 2
+
         if doubled > 9
           digits = doubled.digits
           doubled = digits[0] + digits[1]
         end
+
         digits_to_sum.push(doubled)
       else
         digits_to_sum.push(num)
@@ -29,7 +23,6 @@ module Luhn
     end
 
     sum = 0
-
     digits_to_sum.each { |num| sum += num }
 
     checksum = (sum * 9) % 10
@@ -39,7 +32,6 @@ module Luhn
 
   def self.valid?(input)
     stripped_input = input.gsub(/\s+/, "")
-
 
     if stripped_input.length == 1
         return false
