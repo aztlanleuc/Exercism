@@ -8,12 +8,24 @@ To get started with TDD, see the `README.md` file in your
 
 module Robot
     def self.forget
-        # do nothing
+        Robots::regenerate_names
         puts "\n--------------------"
     end
 
     class Robots 
-        @@taken_names = []
+        letters = ("A".."Z").to_a.repeated_permutation(2).to_a
+        letter_combos = letters.map do |element|
+            element.join("")
+        end
+
+        numbers = (0..9).to_a.repeated_permutation(3).to_a
+        number_combos = numbers.map do |element|
+            element.join("")
+        end
+
+        valid_name_arrays = letter_combos.product(number_combos)
+
+        @@available_names = valid_name_arrays.map { |elem| elem.join("") }
 
         attr_reader :name
 
@@ -22,24 +34,45 @@ module Robot
         end
 
         def generate_name
-            letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")
+            index = rand(@@available_names.length)
 
-            name = ""
-            loop do
-                name = letters[rand(26)] + letters[rand(26)] + rand(100..1000).to_s
-                # puts name
-                break if !@@taken_names.include? name
-            end
+            # puts index
 
-            @@taken_names.push name
+            name = @@available_names.fetch(index, nil)
+
+            @@available_names.delete_at(index)
+
+            puts "there are #{@@available_names.length} names remaining"
+
+            # puts name
 
             name
         end
 
         def reset
-            @@taken_names.delete(@name)
+            @@available_names.push(@name)
 
             @name = generate_name
+        end
+
+        def self.regenerate_names
+            letters = ("A".."Z").to_a.repeated_permutation(2).to_a
+            letter_combos = letters.map do |element|
+                element.join("")
+            end
+
+            numbers = (0..9).to_a.repeated_permutation(3).to_a
+            number_combos = numbers.map do |element|
+                element.join("")
+            end
+
+            valid_name_arrays = letter_combos.product(number_combos)
+
+            valid_names = valid_name_arrays.map { |elem| elem.join("") }
+
+            # puts "the number of valid names is #{valid_names.length}"
+
+            @@available_names = valid_names
         end
     end
 
@@ -48,7 +81,3 @@ module Robot
     end
 end
 
-
-robot = Robot::Robots.new
-
-robot.generate_names

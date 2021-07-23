@@ -81,6 +81,9 @@ class RobotTest < Minitest::Test
       robot = Robot.new
       seen_names[robot.name] += 1
       robots << robot
+      puts seen_names.size
+      puts robots.size
+      puts "##########"
     end
     timeout_message = "Timed out trying to generate all possible robots"
     assert_equal all_names_count, robots.size, timeout_message
