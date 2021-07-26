@@ -1,40 +1,27 @@
-=begin
-Write your code for the 'Grep' exercise in this file. Make the tests in
-`grep_test.rb` pass.
-
-To get started with TDD, see the `README.md` file in your
-`ruby/grep` directory.
-=end
-
 module Grep
     def self.grep(pattern, flags, files)
-=begin
-        ok so last time this worked by handling the various flags in batches
-            - way the matching is done: case insensitive & full line => outputs boolean
-            - invert the match => outputs boolean
-            - modify the output: line names or files only => outputs string
-=end
-
         output = ""
 
         files.each do |text| 
             file = File.open(text)
             file.readlines.each_with_index do |line, index|
-                # print "\n#{index + 1}:"
 
+                # identify which flags that influence the matching have been included
+                # and create boolean values for each of them
                 case_insensitive = flags.include? "-i"
                 full_line = flags.include? "-x"
                 invert = flags.include? "-v"
 
-                does_match = find_matches(pattern, line.clone, case_insensitive, full_line, invert)
+                does_match = find_matches(pattern, line, case_insensitive, full_line, invert) 
 
-                f_name = (flags.include? "-l") ? text : nil
-                l_num = (flags.include? "-n") ? index + 1 : nil
+                # identify what additional information to include in the output
+                file_name = (flags.include? "-l") ? text : nil
+                line_num = (flags.include? "-n") ? index + 1 : nil
 
                 if does_match
-                    to_append = edit_output(line, f_name, l_num)
+                    to_append = edit_output(line, file_name, line_num)
                     
-                    if !output.include? to_append
+                    if !output.include? to_append # we don't want double entries of information
                         output << "#{text}:" if files.length > 1 && !flags.include?("-l")
                         output << to_append
                     end
@@ -42,26 +29,24 @@ module Grep
             end
         end
 
-        return output.rstrip
+        return output.rstrip # we need to remove any stray newlines that may have appeared during the iteration process
     end
 
-    def self.find_matches(pattern, line, case_insensitive, full_line, invert) # this function will also need to handle inversions i think
-        line_original = line.clone
+    def self.find_matches(pattern, line, case_insensitive, full_line, invert)
+        # we have to clone the passed in strings so we can modify them without affecting their values outside the function
+        test_pattern = pattern.clone
+        test_line = line.clone
 
         if case_insensitive
-            pattern.downcase!
-            line.downcase!
+            test_pattern.downcase!
+            test_line.downcase!
         end
         
         match_found = false
 
-        # puts "line: #{line}\npattern: #{pattern}"
-
-        if !full_line && line.include?(pattern)
-            # puts "match found"
+        if !full_line && test_line.include?(test_pattern)
             match_found = true
-        elsif full_line && line.rstrip == pattern
-            # puts "match found"
+        elsif full_line && test_line.rstrip == test_pattern
             match_found = true
         end
 
@@ -71,20 +56,12 @@ module Grep
     end
 
     def self.edit_output(matching_line, file_name, line_num)
-        # puts "file name: #{file_name}, line num: #{line_num}"
-
-        unless matching_line == ""
-            if file_name
-                # puts "file names only"
-                return file_name + "\n"
-            elsif line_num
-                # puts "include line numbers"
-                return "#{line_num}:#{matching_line}"
-            else
-                # puts "just the line"
-                return matching_line
-            end
-        else return ""
+        if file_name
+            return file_name + "\n"
+        elsif line_num
+            return "#{line_num}:#{matching_line}"
+        else
+            return matching_line
         end
     end
 end
