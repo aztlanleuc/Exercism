@@ -4,6 +4,7 @@ require_relative 'grep'
 # Common test data version: 1.2.0 4f2efaa
 class GrepTest < Minitest::Test
   def setup
+    puts "\n-----------"
     IO.write 'iliad.txt', <<~END
       Achilles sing, O Goddess! Peleus' son;
       His wrath pernicious, who ten thousand woes
