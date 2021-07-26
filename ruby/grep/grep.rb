@@ -26,12 +26,19 @@ module Grep
                 full_line = flags.include? "-x"
                 invert = flags.include? "-v"
 
-                match = find_matches(pattern, line, case_insensitive, full_line, invert)
+                does_match = find_matches(pattern, line.clone, case_insensitive, full_line, invert)
 
                 f_name = (flags.include? "-l") ? text : nil
                 l_num = (flags.include? "-n") ? index + 1 : nil
 
-                output << edit_output(match, f_name, l_num)
+                if does_match
+                    to_append = edit_output(line, f_name, l_num)
+                    
+                    if !output.include? to_append
+                        output << "#{text}:" if files.length > 1 && !flags.include?("-l")
+                        output << to_append
+                    end
+                end
             end
         end
 
@@ -60,7 +67,7 @@ module Grep
 
         match_found = invert ? !match_found : match_found
 
-        return match_found ? line_original : ""
+        return match_found
     end
 
     def self.edit_output(matching_line, file_name, line_num)
@@ -69,7 +76,7 @@ module Grep
         unless matching_line == ""
             if file_name
                 # puts "file names only"
-                return file_name
+                return file_name + "\n"
             elsif line_num
                 # puts "include line numbers"
                 return "#{line_num}:#{matching_line}"
