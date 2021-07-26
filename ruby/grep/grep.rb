@@ -20,14 +20,16 @@ module Grep
         files.each do |text| 
             file = File.open(text)
             file.readlines.each_with_index do |line, index|
-                print "\n#{index + 1}:"
+                # print "\n#{index + 1}:"
 
-                case_insensitive = (flags.include? "-i") ? true : false
+                case_insensitive = flags.include? "-i"
+                full_line = flags.include? "-x"
+                invert = flags.include? "-v"
 
-                match = find_matches(pattern, line, case_insensitive)
+                match = find_matches(pattern, line, case_insensitive, full_line, invert)
 
-                f_name = (flags.include? "-l") ? text : false
-                l_num = (flags.include? "-n") ? index + 1 : false
+                f_name = (flags.include? "-l") ? text : nil
+                l_num = (flags.include? "-n") ? index + 1 : nil
 
                 output << edit_output(match, f_name, l_num)
             end
@@ -36,24 +38,29 @@ module Grep
         return output.rstrip
     end
 
-    def self.find_matches(pattern, line, case_insensitive) # this function will also need to handle inversions i think
-        output = ""
-
+    def self.find_matches(pattern, line, case_insensitive, full_line, invert) # this function will also need to handle inversions i think
         line_original = line.clone
 
         if case_insensitive
             pattern.downcase!
             line.downcase!
         end
-
-        puts "after case: #{line_original}"
         
-        if line.include? pattern
-            puts "match found"
-            output << line_original
+        match_found = false
+
+        # puts "line: #{line}\npattern: #{pattern}"
+
+        if !full_line && line.include?(pattern)
+            # puts "match found"
+            match_found = true
+        elsif full_line && line.rstrip == pattern
+            # puts "match found"
+            match_found = true
         end
 
-        return output
+        match_found = invert ? !match_found : match_found
+
+        return match_found ? line_original : ""
     end
 
     def self.edit_output(matching_line, file_name, line_num)
